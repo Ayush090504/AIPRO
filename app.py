@@ -1,49 +1,43 @@
 import streamlit as st
 from main import AIPROSCore
-from ui.layout import (
-    setup_page,
-    header,
-    animated_ring,
-    command_input,
-    show_plan,
-    confirmation_buttons
-)
+from ui.layout import setup_page, header, command_input, show_plan, confirmation_buttons
 
 setup_page()
 header()
 
-# Session state
-if "processing" not in st.session_state:
-    st.session_state.processing = False
 if "pending" not in st.session_state:
     st.session_state.pending = None
 
 core = AIPROSCore()
 
-animated_ring(st.session_state.processing)
+command, send = command_input()
 
-command, send_clicked = command_input(disabled=st.session_state.processing)
-
-if send_clicked and command:
-    st.session_state.processing = True
-    with st.spinner("🧠 AIPROS is thinking…"):
-        st.session_state.pending = core.process_input(command)
-    st.session_state.processing = False
+if send and command:
+    st.session_state.pending = core.process_input(command)
 
 if st.session_state.pending:
-    st.divider()
-    show_plan(st.session_state.pending["plan"])
+    result = st.session_state.pending
 
-    confirm, cancel = confirmation_buttons()
-
-    if confirm:
-        core.execute(
-            st.session_state.pending["intent"],
-            st.session_state.pending["plan"]
-        )
-        st.success("✅ Action executed")
+    if result["mode"] == "chat":
+        st.divider()
+        st.markdown("💬 **AIPROS**")
+        st.write(result["response"])
         st.session_state.pending = None
 
-    if cancel:
-        st.warning("❌ Action cancelled")
-        st.session_state.pending = None
+    else:
+        st.divider()
+        show_plan(result["plan"])
+
+        yes, no = confirmation_buttons()
+
+        if yes:
+            exec_result = core.execute(result["intent"], result["plan"])
+            if exec_result.get("executed"):
+                st.success("✅ Action executed")
+            else:
+                st.error("❌ Could not execute the command")
+            st.session_state.pending = None
+
+        if no:
+            st.warning("❌ Action cancelled")
+            st.session_state.pending = None

@@ -39,17 +39,15 @@ def animated_ring(active: bool):
     if active:
         st.markdown('<div class="ring"></div>', unsafe_allow_html=True)
 
-def command_input(disabled: bool):
-    with st.form("command_form"):
-        command = st.text_input(
+def command_input(disabled=False):
+    with st.form("cmd"):
+        cmd = st.text_input(
             "",
-            placeholder="Type a command… (e.g. open notepad)",
-            label_visibility="collapsed",
+            placeholder="Type a command...",
             disabled=disabled
         )
         send = st.form_submit_button("▶ Send", disabled=disabled)
-
-    return command, send
+    return cmd, send
 
 def show_plan(plan: dict):
     st.subheader("📝 What I will do")
