@@ -1,1 +1,5 @@
-streamlit
+streamlit>=1.31.0
+requests>=2.31.0
+pyautogui>=0.9.54
+python-dotenv>=1.0.1
+cryptography>=42.0.0
