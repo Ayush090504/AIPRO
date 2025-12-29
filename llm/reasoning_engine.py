@@ -1,77 +1,46 @@
-import json
-import re
 from llm.ollama_client import call_ollama
+import json
 
 SYSTEM_PROMPT = """
-You are AIPROS, an offline desktop AI assistant.
+You are an intent classifier.
 
-Classify the user input into ONE mode:
-
-1. "command" → if the user wants the system to do something
-2. "chat" → if the user is having a normal conversation
-
-RULES:
-- Respond ONLY with valid JSON
-- No explanations
-- No markdown
-- No extra text
-
-JSON schema:
-{
-  "mode": "command | chat",
-  "intent": "",
-  "action": "",
-  "target": "",
-  "confidence": 0.0
-}
-
-Examples:
-
-User: open notepad
+If the user wants to open or run something on their computer,
+return JSON:
 {
   "mode": "command",
-  "intent": "launch_application",
   "action": "open",
-  "target": "notepad",
-  "confidence": 0.9
+  "target": "<application name>"
 }
 
-User: how are you?
+If the user is chatting normally, return:
 {
   "mode": "chat",
-  "intent": "",
-  "action": "",
-  "target": "",
-  "confidence": 0.8
+  "response": "<natural reply>"
 }
+ONLY return JSON.
 """
-
-def _extract_json(text: str):
-    match = re.search(r"\{.*\}", text, re.DOTALL)
-    if not match:
-        return None
-    try:
-        return json.loads(match.group())
-    except json.JSONDecodeError:
-        return None
-
-def _norm(val):
-    if val is None:
-        return ""
-    return str(val).lower().strip()
 
 def generate_intent(user_input: str) -> dict:
     prompt = f"{SYSTEM_PROMPT}\nUser: {user_input}"
-    raw = call_ollama(prompt)
-    parsed = _extract_json(raw)
 
-    if not parsed:
-        return {"mode": "chat"}
+    raw = call_ollama(prompt)
+
+    try:
+        parsed = json.loads(raw)
+    except Exception:
+        return {
+            "mode": "chat",
+            "response": raw
+        }
+
+    if parsed.get("mode") == "command":
+        return {
+            "mode": "command",
+            "action": parsed.get("action", "open"),
+            "target": parsed.get("target", "")
+        }
 
     return {
-        "mode": _norm(parsed.get("mode")),
-        "intent": _norm(parsed.get("intent")),
-        "action": _norm(parsed.get("action")),
-        "target": _norm(parsed.get("target")),
-        "confidence": parsed.get("confidence", 0.0)
+        "mode": "chat",
+        "response": parsed.get("response", "")
     }
