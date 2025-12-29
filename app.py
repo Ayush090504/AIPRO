@@ -1,43 +1,26 @@
 import streamlit as st
 from main import AIPROSCore
-from ui.layout import setup_page, header, command_input, show_plan, confirmation_buttons
 
-setup_page()
-header()
+st.set_page_config(page_title="AIPROS", layout="centered")
 
-if "pending" not in st.session_state:
-    st.session_state.pending = None
+st.markdown(
+    "<h1 style='text-align:center;'>🧠 AIPROS</h1>"
+    "<p style='text-align:center;'>AI Powered Productivity Layer</p>",
+    unsafe_allow_html=True
+)
 
-core = AIPROSCore()
+core = AIPROSCore(auto_execute=True)
 
-command, send = command_input()
+command = st.text_input("Enter a command or message")
 
-if send and command:
-    st.session_state.pending = core.process_input(command)
-
-if st.session_state.pending:
-    result = st.session_state.pending
+if st.button("▶ Send") and command.strip():
+    with st.spinner("AIPROS is thinking..."):
+        result = core.process_input(command)
 
     if result["mode"] == "chat":
-        st.divider()
-        st.markdown("💬 **AIPROS**")
-        st.write(result["response"])
-        st.session_state.pending = None
+        st.markdown(f"**AIPROS:** {result['response']}")
 
-    else:
-        st.divider()
-        show_plan(result["plan"])
-
-        yes, no = confirmation_buttons()
-
-        if yes:
-            exec_result = core.execute(result["intent"], result["plan"])
-            if exec_result.get("executed"):
-                st.success("✅ Action executed")
-            else:
-                st.error("❌ Could not execute the command")
-            st.session_state.pending = None
-
-        if no:
-            st.warning("❌ Action cancelled")
-            st.session_state.pending = None
+    elif result["mode"] == "command":
+        st.success(result["message"])
+        if not result.get("execution"):
+            st.error("Could not execute the command.")
