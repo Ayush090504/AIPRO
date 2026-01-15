@@ -3,14 +3,10 @@ from main import AIPROSCore
 
 st.set_page_config(page_title="AIPROS", layout="centered")
 
-st.markdown(
-    "<h1 style='text-align:center;'>🧠 AIPROS</h1>"
-    "<p style='text-align:center;'>AI Powered Productivity Layer</p>",
-    unsafe_allow_html=True
-)
+st.markdown("<h1 style='text-align:center;'>🧠 AIPROS</h1>", unsafe_allow_html=True)
+st.markdown("<p style='text-align:center;'>AI Powered Productivity Layer</p>", unsafe_allow_html=True)
 
-core = AIPROSCore(auto_execute=True)
-
+core = AIPROSCore()
 command = st.text_input("Enter a command or message")
 
 if st.button("▶ Send") and command.strip():
@@ -19,8 +15,8 @@ if st.button("▶ Send") and command.strip():
 
     if result["mode"] == "chat":
         st.markdown(f"**AIPROS:** {result['response']}")
-
-    elif result["mode"] == "command":
-        st.success(result["message"])
-        if not result.get("execution"):
+    else:
+        if result["executed"]:
+            st.success("Got it. I’ve run that for you.")
+        else:
             st.error("Could not execute the command.")
