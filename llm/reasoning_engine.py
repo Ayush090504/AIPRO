@@ -44,12 +44,26 @@ def generate_intent(text: str) -> dict:
         }
 
     # 5️⃣ Open app
-    if text_l.startswith("open"):
-        app = text.replace("open", "").strip()
+    # ------------------------------
+# OPEN APPLICATION (explicit)
+# ------------------------------
+    if text_l.startswith("open "):
+        target = text[5:].strip()
+
+    # Folder intent ONLY if explicitly mentioned
+        if target.lower().startswith("folder "):
+            folder_name = target[7:].strip()
+            return {
+                "mode": "tool",
+                "tool": "open_folder_by_name",
+                "args": {"folder_name": folder_name}
+            }
+
+    # Otherwise ALWAYS treat as application
         return {
             "mode": "tool",
             "tool": "open_app",
-            "args": {"app_name": app}
+            "args": {"app_name": target}
         }
 
     # 6️⃣ WhatsApp (web)

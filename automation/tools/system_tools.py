@@ -5,6 +5,7 @@ import shutil
 import time
 from pathlib import Path
 import pyautogui
+import platform
 
 # -------------------------
 # FILE & DIRECTORY TOOLS
@@ -88,16 +89,55 @@ def play_youtube_video(topic: str):
 # APP & SYSTEM TOOLS
 # -------------------------
 
-def open_app(app_name: str):
-    exe = shutil.which(app_name)
-    if exe:
-        subprocess.Popen(exe)
+def open_app(app_name: str) -> bool:
+    """
+    Opens applications ONLY.
+    Never opens folders.
+    No Explorer guessing.
+    """
+
+    if platform.system().lower() != "windows":
+        return False
+
+    name = app_name.lower().strip()
+
+    # 1️⃣ URI-based Windows apps
+    URI_APPS = {
+        "microsoft edge": "microsoft-edge:",
+        "edge": "microsoft-edge:",
+        "microsoft store": "ms-windows-store:",
+        "windows store": "ms-windows-store:",
+    }
+
+    if name in URI_APPS:
+        subprocess.Popen(["explorer.exe", URI_APPS[name]])
         return True
 
-    subprocess.Popen(["explorer.exe", app_name])
-    return True
+    # 2️⃣ Known Windows executables
+    KNOWN_APPS = {
+        "calculator": "calc.exe",
+        "calc": "calc.exe",
+        "notepad": "notepad.exe",
+        "paint": "mspaint.exe",
+        "cmd": "cmd.exe",
+        "command prompt": "cmd.exe",
+        "powershell": "powershell.exe",
+        "vs code": "code",
+        "visual studio code": "code",
+    }
 
+    if name in KNOWN_APPS:
+        subprocess.Popen([KNOWN_APPS[name]])
+        return True
 
+    # 3️⃣ PATH-based executables
+    exe = shutil.which(name.replace(" ", ""))
+    if exe:
+        subprocess.Popen([exe])
+        return True
+
+    # ❌ DO NOT FALL BACK TO EXPLORER
+    return False
 # -------------------------
 # WHATSAPP (WEB)
 # -------------------------
