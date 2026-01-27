@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AIPROS</title>
+  <link rel="stylesheet" href="/static/style.css?v=1" />
+</head>
+
+<body>
+
+  <div class="app">
+
+    <!-- Header -->
+    <header class="header">
+      <h1>🧠 AIPROS</h1>
+      <p>AI Powered Productivity Layer for Smart Desktop Interaction</p>
+    </header>
+
+    <!-- Main Layout -->
+    <main class="layout">
+
+      <!-- Left Panel -->
+      <section class="panel glass">
+        <h3>Recent</h3>
+        <button>Open VS Code</button>
+        <button>Open Documents</button>
+        <button>Run Python Script</button>
+        <button>Check Updates</button>
+      </section>
+
+      <!-- Center Command -->
+      <section class="center glass">
+        <div class="command-bar">
+          <input
+            id="commandInput"
+            type="text"
+            placeholder="Enter a command or message…"
+          />
+          <button class="mic">🎤</button>
+          <button id="sendBtn" class="send">➤</button>
+        </div>
+        <span class="hint">Press Ctrl + Enter</span>
+      </section>
+
+      <!-- Right Panel -->
+      <section class="panel glass">
+        <h3>Suggestions</h3>
+        <button>Open code and documents</button>
+        <button>Launch browser</button>
+        <button>What can you do?</button>
+      </section>
+
+    </main>
+
+    <!-- Toast -->
+    <div class="toast">Ready</div>
+
+  </div>
+
+  <!-- ✅ Script MUST be at the end -->
+  <script src="/static/app.js"></script>
+
+</body>
+</html>
