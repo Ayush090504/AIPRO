@@ -6,7 +6,7 @@ from automation.tools.file_tools import (
 )
 
 from automation.tools.folder_finder import (
-    open_folder_by_name,
+    find_folder_by_name,
 )
 
 from automation.tools.input_tools import (
@@ -48,7 +48,7 @@ TOOL_REGISTRY = {
     "search_files": search_files,
 
     # Folders
-    "open_folder_by_name": open_folder_by_name,
+    "open_folder_by_name": find_folder_by_name,
 
     # Apps & system
     "open_app": open_app,

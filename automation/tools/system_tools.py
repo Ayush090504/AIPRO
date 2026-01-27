@@ -5,7 +5,8 @@ import shutil
 import time
 from pathlib import Path
 import pyautogui
-import platform
+from automation.app_aliases import APP_ALIASES
+
 
 # -------------------------
 # FILE & DIRECTORY TOOLS
@@ -14,8 +15,9 @@ import platform
 def open_file(filepath: str):
     path = Path(filepath)
     if not path.exists():
-        raise FileNotFoundError(f"{filepath} does not exist")
+        return {"executed": False, "error": "File not found"}
     os.startfile(path)
+    return {"executed": True}
 
 
 SAFE_ROOTS = [
@@ -25,27 +27,41 @@ SAFE_ROOTS = [
     Path.home() / "Desktop"
 ]
 
-def open_folder_by_name(folder_name: str):
-    folder_name = folder_name.lower()
+def open_folder_by_name(folder_name: str) -> bool:
+    folder_name = folder_name.lower().strip()
 
-    # First: direct known folders
-    for root in SAFE_ROOTS:
-        candidate = root / folder_name
-        if candidate.exists() and candidate.is_dir():
-            subprocess.Popen(["explorer", str(candidate)])
-            return True
+    # 1️⃣ Common user folders (instant)
+    COMMON_FOLDERS = {
+        "documents": Path.home() / "Documents",
+        "downloads": Path.home() / "Downloads",
+        "desktop": Path.home() / "Desktop",
+        "pictures": Path.home() / "Pictures",
+        "videos": Path.home() / "Videos",
+        "music": Path.home() / "Music",
+    }
 
-    # Fallback: recursive search (limited)
-    for root in SAFE_ROOTS:
-        try:
-            for path in root.rglob(folder_name):
-                if path.is_dir():
-                    subprocess.Popen(["explorer", str(path)])
-                    return True
-        except PermissionError:
-            continue
+    if folder_name in COMMON_FOLDERS:
+        path = COMMON_FOLDERS[folder_name]
+        if path.exists():
+            subprocess.Popen(["explorer.exe", str(path)])
+            return True   # ✅ CRITICAL
 
+    # 2️⃣ Safe recursive search (home only)
+    home = Path.home()
+    try:
+        for root, dirs, _ in os.walk(home):
+            for d in dirs:
+                if d.lower() == folder_name:
+                    subprocess.Popen(
+                        ["explorer.exe", str(Path(root) / d)]
+                    )
+                    return True   # ✅ CRITICAL
+    except PermissionError:
+        pass
+
+    # 3️⃣ Not found
     return False
+
 
 def search_files(query: str, base_path: str = "C:/"):
     matches = []
@@ -55,14 +71,14 @@ def search_files(query: str, base_path: str = "C:/"):
                 matches.append(os.path.join(root, f))
         if len(matches) >= 10:
             break
-    return matches
+    return {"executed": True, "results": matches}
 
 
 def index_directory(path: str):
     p = Path(path)
     if not p.exists():
-        return []
-    return [str(x) for x in p.rglob("*")]
+        return {"executed": False, "error": "Path does not exist"}
+    return {"executed": True, "items": [str(x) for x in p.rglob("*")]}
 
 
 # -------------------------
@@ -73,35 +89,30 @@ def open_url(url: str):
     if not url.startswith("http"):
         url = "https://" + url
     webbrowser.open(url)
+    return {"executed": True}
 
 
 def search_web(query: str):
     q = query.replace(" ", "+")
     webbrowser.open(f"https://www.google.com/search?q={q}")
+    return {"executed": True}
 
 
 def play_youtube_video(topic: str):
     q = topic.replace(" ", "+")
     webbrowser.open(f"https://www.youtube.com/results?search_query={q}")
+    return {"executed": True}
 
 
 # -------------------------
 # APP & SYSTEM TOOLS
 # -------------------------
 
-def open_app(app_name: str) -> bool:
-    """
-    Opens applications ONLY.
-    Never opens folders.
-    No Explorer guessing.
-    """
-
-    if platform.system().lower() != "windows":
-        return False
-
+def open_app(app_name: str):
+    key = app_name.lower().strip()
+    app_name = APP_ALIASES.get(key, app_name)
     name = app_name.lower().strip()
 
-    # 1️⃣ URI-based Windows apps
     URI_APPS = {
         "microsoft edge": "microsoft-edge:",
         "edge": "microsoft-edge:",
@@ -111,33 +122,28 @@ def open_app(app_name: str) -> bool:
 
     if name in URI_APPS:
         subprocess.Popen(["explorer.exe", URI_APPS[name]])
-        return True
+        return {"executed": True}
 
-    # 2️⃣ Known Windows executables
     KNOWN_APPS = {
         "calculator": "calc.exe",
         "calc": "calc.exe",
         "notepad": "notepad.exe",
-        "paint": "mspaint.exe",
-        "cmd": "cmd.exe",
-        "command prompt": "cmd.exe",
-        "powershell": "powershell.exe",
         "vs code": "code",
         "visual studio code": "code",
     }
 
     if name in KNOWN_APPS:
         subprocess.Popen([KNOWN_APPS[name]])
-        return True
+        return {"executed": True}
 
-    # 3️⃣ PATH-based executables
     exe = shutil.which(name.replace(" ", ""))
     if exe:
         subprocess.Popen([exe])
-        return True
+        return {"executed": True}
 
-    # ❌ DO NOT FALL BACK TO EXPLORER
-    return False
+    return {"executed": False, "error": "Application not found"}
+
+
 # -------------------------
 # WHATSAPP (WEB)
 # -------------------------
@@ -146,6 +152,7 @@ def send_whatsapp(recipient: str, message: str):
     text = message.replace(" ", "%20")
     url = f"https://wa.me/{recipient}?text={text}"
     webbrowser.open(url)
+    return {"executed": True}
 
 
 # -------------------------
@@ -154,39 +161,48 @@ def send_whatsapp(recipient: str, message: str):
 
 def type_text(text: str):
     pyautogui.write(text, interval=0.03)
+    return {"executed": True}
 
 
 def paste_text(text: str):
     pyautogui.write(text)
+    return {"executed": True}
 
 
 def mouse_move(x: int, y: int):
     pyautogui.moveTo(x, y)
+    return {"executed": True}
 
 
 def mouse_click(x: int, y: int, button="left"):
     pyautogui.click(x, y, button=button)
+    return {"executed": True}
 
 
 def mouse_scroll(amount: int):
     pyautogui.scroll(amount)
+    return {"executed": True}
 
 
 def keyboard_press(key: str):
     pyautogui.press(key)
+    return {"executed": True}
 
 
 def press_hotkey(keys: list):
     pyautogui.hotkey(*keys)
+    return {"executed": True}
 
 
 def get_screen_size():
-    return pyautogui.size()
+    return {"executed": True, "size": pyautogui.size()}
 
 
 def take_screenshot(filename: str):
     pyautogui.screenshot(filename)
+    return {"executed": True}
 
 
 def wait(seconds: int):
     time.sleep(seconds)
+    return {"executed": True}
