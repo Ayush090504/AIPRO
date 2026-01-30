@@ -3,62 +3,82 @@
 <head>
   <meta charset="UTF-8" />
   <title>AIPROS</title>
-  <link rel="stylesheet" href="/static/style.css?v=1" />
+  <link rel="stylesheet" href="/static/style.css" />
 </head>
 
 <body>
+  <div class="background"></div>
 
   <div class="app">
 
-    <!-- Header -->
+    <!-- HEADER -->
     <header class="header">
       <h1>🧠 AIPROS</h1>
       <p>AI Powered Productivity Layer for Smart Desktop Interaction</p>
     </header>
 
-    <!-- Main Layout -->
+    <!-- MAIN LAYOUT -->
     <main class="layout">
 
-      <!-- Left Panel -->
+      <!-- LEFT PANEL -->
       <section class="panel glass">
-        <h3>Recent</h3>
-        <button>Open VS Code</button>
-        <button>Open Documents</button>
-        <button>Run Python Script</button>
-        <button>Check Updates</button>
+        <h3>Recent Commands</h3>
+
+        <button class="cmd-btn">Open Code</button>
+        <button class="cmd-btn">Open Folder Documents</button>
+
+        <div class="panel-footer">
+          Press <b>Ctrl + /</b> for help
+        </div>
       </section>
 
-      <!-- Center Command -->
+      <!-- CENTER -->
       <section class="center glass">
+
         <div class="command-bar">
           <input
             id="commandInput"
             type="text"
             placeholder="Enter a command or message…"
           />
-          <button class="mic">🎤</button>
-          <button id="sendBtn" class="send">➤</button>
+
+          <button class="mic-btn">🎤</button>
+          <button class="send-btn" id="sendBtn">Send</button>
         </div>
-        <span class="hint">Press Ctrl + Enter</span>
+
+        <div class="hint">
+          Press <b>CTRL + ENTER</b> to run
+        </div>
+
+        <!-- STATUS / CHAT -->
+<div id="status" class="status hidden">
+  AIPROS is thinking…
+</div>
+
+<div id="toast" class="toast persistent">
+  Ready
+</div>
+
       </section>
 
-      <!-- Right Panel -->
+      <!-- RIGHT PANEL -->
       <section class="panel glass">
-        <h3>Suggestions</h3>
-        <button>Open code and documents</button>
-        <button>Launch browser</button>
-        <button>What can you do?</button>
+        <h3>Smart Suggestions</h3>
+
+        <button class="cmd-btn">📁 Open code and open folder documents</button>
+        <button class="cmd-btn">🌐 Open Microsoft Edge</button>
+        <button class="cmd-btn">🌦 What’s the weather today?</button>
+        <button class="cmd-btn">💽 Check disk usage</button>
+
+        <div class="panel-footer subtle">
+          Suggested based on your recent actions
+        </div>
       </section>
 
     </main>
-
-    <!-- Toast -->
-    <div class="toast">Ready</div>
-
   </div>
 
-  <!-- ✅ Script MUST be at the end -->
+  <!-- EXISTING JS (UNCHANGED) -->
   <script src="/static/app.js"></script>
-
 </body>
 </html>

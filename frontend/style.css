@@ -1,95 +1,102 @@
 /* RESET */
 * {
   box-sizing: border-box;
+  font-family: "Segoe UI", system-ui, sans-serif;
+}
+
+body {
   margin: 0;
-  padding: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  height: 100vh;
+  overflow: hidden;
+  color: #222;
 }
 
 /* BACKGROUND */
-body {
-  height: 100vh;
+.background {
+  position: fixed;
+  inset: 0;
   background:
-    radial-gradient(circle at 30% 20%, #20283a, transparent 40%),
-    radial-gradient(circle at 70% 10%, #1a2233, transparent 45%),
-    linear-gradient(#0b0e14, #0b0e14);
-  color: #eaeaea;
+    radial-gradient(circle at top, #f6f2ed 0%, #e5ded4 40%, #d3cbc1 100%);
+  z-index: -1;
 }
 
-/* APP */
+/* APP WRAPPER */
 .app {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+  padding: 40px 60px;
 }
 
 /* HEADER */
 .header {
   text-align: center;
-  padding: 34px 0 22px;
+  margin-bottom: 40px;
 }
 
 .header h1 {
-  font-size: 2.3rem;
+  font-size: 44px;
+  margin: 0;
   font-weight: 600;
-  letter-spacing: 0.4px;
 }
 
 .header p {
-  opacity: 0.65;
-  margin-top: 6px;
-  font-size: 0.95rem;
+  margin-top: 8px;
+  opacity: 0.8;
+  font-size: 16px;
 }
 
 /* LAYOUT */
 .layout {
   display: grid;
-  grid-template-columns: 1fr 2.6fr 1fr;
-  gap: 22px;
-  padding: 22px;
-  flex: 1;
+  grid-template-columns: 260px 1fr 260px;
+  gap: 30px;
+  align-items: start;
 }
 
-/* GLASS */
+/* GLASS PANEL */
 .glass {
-  background:
-    linear-gradient(
-      180deg,
-      rgba(255,255,255,0.08),
-      rgba(255,255,255,0.02)
-    );
-  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255, 255, 255, 0.55);
   backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
   border-radius: 20px;
-  padding: 18px;
+  padding: 24px;
   box-shadow:
-    0 10px 30px rgba(0,0,0,0.35),
-    inset 0 1px 0 rgba(255,255,255,0.08);
+    0 20px 40px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
 /* PANELS */
 .panel h3 {
-  margin-bottom: 14px;
-  font-weight: 500;
-  opacity: 0.85;
-  font-size: 0.95rem;
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-weight: 600;
 }
 
-.panel button {
+/* BUTTONS */
+.cmd-btn {
   width: 100%;
-  padding: 10px;
-  margin-bottom: 9px;
-  border-radius: 11px;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.1);
-  color: #eaeaea;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  border-radius: 12px;
+  border: none;
+  background: rgba(255, 255, 255, 0.6);
   cursor: pointer;
-  transition: all 0.18s ease;
+  text-align: left;
+  transition: all 0.2s ease;
 }
 
-.panel button:hover {
-  background: rgba(255,255,255,0.14);
+.cmd-btn:hover {
+  background: rgba(255, 255, 255, 0.85);
   transform: translateY(-1px);
+}
+
+/* FOOTER TEXT */
+.panel-footer {
+  margin-top: 18px;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.panel-footer.subtle {
+  margin-top: 12px;
 }
 
 /* CENTER */
@@ -103,74 +110,146 @@ body {
 .command-bar {
   display: flex;
   gap: 12px;
-  padding: 8px;
-  border-radius: 18px;
-  background: rgba(0,0,0,0.35);
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+  align-items: center;
 }
 
 .command-bar input {
   flex: 1;
-  padding: 15px 16px;
-  border-radius: 14px;
-  background: rgba(0,0,0,0.55);
-  border: 1px solid rgba(255,255,255,0.18);
-  color: #fff;
+  padding: 16px 18px;
   font-size: 16px;
-}
-
-.command-bar input::placeholder {
-  color: rgba(255,255,255,0.45);
-}
-
-.command-bar button {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
+  border-radius: 16px;
   border: none;
-  cursor: pointer;
-  transition: all 0.18s ease;
+  outline: none;
+  background: rgba(255, 255, 255, 0.75);
 }
 
 /* MIC */
-.mic {
-  background: rgba(255,255,255,0.12);
-}
-
-.mic:hover {
-  background: rgba(255,255,255,0.22);
+.mic-btn {
+  padding: 14px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.7);
 }
 
 /* SEND */
-.send {
-  background: linear-gradient(135deg, #6b8cff, #7a6cff);
+.send-btn {
+  padding: 14px 26px;
+  border-radius: 16px;
+  border: none;
+  cursor: pointer;
+  background: #222;
   color: #fff;
-  box-shadow: 0 6px 18px rgba(90,120,255,0.35);
+  font-size: 15px;
 }
 
-.send:hover {
-  transform: translateY(-1px) scale(1.04);
-  box-shadow: 0 10px 26px rgba(90,120,255,0.5);
+.send-btn:hover {
+  background: #000;
 }
 
+/* HINT */
 .hint {
-  margin-top: 10px;
-  font-size: 12px;
-  opacity: 0.55;
+  margin-top: 12px;
+  text-align: center;
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+/* TOAST / STATUS */
+.toast {
+  margin-top: 20px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.75);
+  font-size: 14px;
   text-align: center;
 }
 
-/* TOAST */
-.toast {
+.toast.persistent {
+  opacity: 1;
+}
+
+/* CONFIRMATION MODAL */
+.overlay {
   position: fixed;
-  bottom: 22px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(20,24,36,0.9);
-  border: 1px solid rgba(255,255,255,0.12);
-  padding: 10px 18px;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.hidden {
+  display: none;
+}
+
+.modal {
+  width: 420px;
+  padding: 24px;
+  border-radius: 20px;
+  text-align: center;
+}
+
+.modal h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.option-btn {
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  background: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+}
+
+.option-btn:hover {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.cancel-btn {
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: none;
+  background: #222;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* THINKING / PROCESSING STATUS */
+.status {
+  margin-top: 18px;
+  padding: 12px 16px;
   border-radius: 14px;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   font-size: 14px;
-  opacity: 0.85;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+  text-align: center;
+  color: #333;
+  box-shadow:
+    0 8px 20px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  animation: thinkingPulse 1.4s ease-in-out infinite;
+}
+
+/* Subtle breathing animation */
+@keyframes thinkingPulse {
+  0% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.4;
+  }
 }

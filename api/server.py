@@ -116,3 +116,23 @@ def resume_after_confirmation(req: ResumeRequest):
             "type": "error",
             "message": str(e)
         })
+
+from voice.speech_to_text import listen_once
+
+@app.post("/voice")
+def voice_command():
+    try:
+        text = listen_once()
+        if not text:
+            return {"status": "error", "message": "Could not understand speech"}
+
+        result = core.process_input(text)
+
+        return {
+            "status": "ok",
+            "spoken_text": text,
+            "result": result
+        }
+
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
