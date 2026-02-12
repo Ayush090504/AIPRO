@@ -55,21 +55,21 @@ def run_command(req: CommandRequest):
         # 🟢 Chat response
         if result.get("mode") == "chat":
             return JSONResponse({
-                "type": "chat",
+                "status": "chat",
                 "message": result.get("response", "")
             })
 
         # 🔵 Command chain
         if result.get("mode") == "chain":
             return JSONResponse({
-                "type": "chain",
+                "status": "chain",
                 "intents": result.get("intents", [])
             })
 
         # 🟡 Needs confirmation
         if result.get("needs_confirmation"):
             return JSONResponse({
-                "type": "needs_confirmation",
+                "status": "needs_confirmation",
                 "message": "Multiple matches found",
                 "data": result
             })
@@ -77,19 +77,23 @@ def run_command(req: CommandRequest):
         # 🟢 Executed successfully
         if result.get("executed"):
             return JSONResponse({
-                "type": "success",
+                "status": "success",
                 "message": "Command executed successfully"
             })
 
         # 🔴 Fallback failure
+        error = result.get("error")
+        if isinstance(error, dict):
+            error = error.get("error") or str(error)
+        message = str(error) if error else "Command could not be executed"
         return JSONResponse({
-            "type": "error",
-            "message": "Command could not be executed"
+            "status": "error",
+            "message": message
         })
 
     except Exception as e:
         return JSONResponse({
-            "type": "error",
+            "status": "error",
             "message": str(e)
         })
 
@@ -117,14 +121,15 @@ def resume_after_confirmation(req: ResumeRequest):
             "message": str(e)
         })
 
-from voice.speech_to_text import listen_once
+from voice.speech_to_text import listen_once, get_last_error
 
 @app.post("/voice")
 def voice_command():
     try:
         text = listen_once()
         if not text:
-            return {"status": "error", "message": "Could not understand speech"}
+            msg = get_last_error() or "Could not understand speech"
+            return {"status": "error", "message": msg}
 
         result = core.process_input(text)
 

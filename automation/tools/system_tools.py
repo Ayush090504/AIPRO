@@ -108,6 +108,20 @@ def play_youtube_video(topic: str):
 # APP & SYSTEM TOOLS
 # -------------------------
 
+START_MENU_DIRS = [
+    Path(os.environ.get("PROGRAMDATA", "")) / "Microsoft/Windows/Start Menu/Programs",
+    Path(os.environ.get("APPDATA", "")) / "Microsoft/Windows/Start Menu/Programs",
+]
+
+def _search_start_menu(app_name: str) -> Path | None:
+    name_l = app_name.lower()
+    for base in START_MENU_DIRS:
+        if base.exists():
+            for shortcut in base.rglob("*.lnk"):
+                if name_l in shortcut.stem.lower():
+                    return shortcut
+    return None
+
 def open_app(app_name: str):
     key = app_name.lower().strip()
     app_name = APP_ALIASES.get(key, app_name)
@@ -139,6 +153,26 @@ def open_app(app_name: str):
     exe = shutil.which(name.replace(" ", ""))
     if exe:
         subprocess.Popen([exe])
+        return {"executed": True}
+
+    # Word fallback
+    if name in ("microsoft word", "word", "ms word"):
+        winword = shutil.which("winword")
+        candidate_paths = [
+            winword,
+            r"C:\Program Files\Microsoft Office\root\Office16\WINWORD.EXE",
+            r"C:\Program Files (x86)\Microsoft Office\root\Office16\WINWORD.EXE",
+        ]
+        for path in candidate_paths:
+            if path and Path(path).exists():
+                subprocess.Popen([path])
+                return {"executed": True}
+
+    shortcut = _search_start_menu(name)
+    if not shortcut and " " in name:
+        shortcut = _search_start_menu(name.split()[-1])
+    if shortcut:
+        os.startfile(str(shortcut))
         return {"executed": True}
 
     return {"executed": False, "error": "Application not found"}

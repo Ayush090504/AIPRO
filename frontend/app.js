@@ -18,6 +18,7 @@ function showToast(message, type = "info", duration = null) {
       : type === "error"
       ? "rgba(220,80,80,0.9)"
       : "rgba(20,24,36,0.95)";
+  toast.style.color = "#fff";
 
   // Clear any existing timer
   if (toast.hideTimer) {
@@ -82,7 +83,11 @@ async function sendCommand() {
     switch (data.status) {
       case "chat":
         // ✅ Persistent until next command
-        showToast(data.message, "info", null);
+        showToast(data.message || "No response from model.", "info", null);
+        break;
+
+      case "chain":
+        showToast("Multiple actions queued. Run them one by one.", "info", 8000);
         break;
 
       case "success":

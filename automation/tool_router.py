@@ -39,6 +39,12 @@ from automation.tools.ui_tools import (
     wait,
 )
 
+from automation.tools.report_tools import (
+    summarize_url_to_app,
+    research_topic_to_app,
+    write_report_to_app,
+    gather_topic_to_word,
+)
 # -----------------------------
 # 🔑 SINGLE SOURCE OF TRUTH
 # -----------------------------
@@ -74,4 +80,10 @@ TOOL_REGISTRY = {
     "get_screen_size": get_screen_size,
     "take_screenshot": take_screenshot,
     "wait": wait,
+
+    # Reports / research
+    "summarize_url_to_app": summarize_url_to_app,
+    "research_topic_to_app": research_topic_to_app,
+    "write_report_to_app": write_report_to_app,
+    "gather_topic_to_word": gather_topic_to_word,
 }

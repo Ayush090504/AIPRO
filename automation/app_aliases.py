@@ -12,6 +12,10 @@ APP_ALIASES = {
     "vscode": "visual studio code",
     "vs code": "visual studio code",
 
+    # Microsoft Word
+    "word": "microsoft word",
+    "ms word": "microsoft word",
+
     # Games
     "ets2": "euro truck simulator 2",
     "ets 2": "euro truck simulator 2",

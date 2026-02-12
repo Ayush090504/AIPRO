@@ -11,7 +11,7 @@ def execute_plan(intent: dict, user_input: str) -> dict:
     try:
         # Validate intent
         if not isinstance(intent, dict):
-            return {"executed": False, "error": "Invalid intent format"}
+            return {"executed": False, "status": "error", "error": "Invalid intent format"}
 
         mode = intent.get("mode")
         tool_name = intent.get("tool")
@@ -21,12 +21,14 @@ def execute_plan(intent: dict, user_input: str) -> dict:
         if mode != "tool":
             return {
                 "executed": False,
+                "status": "error",
                 "error": f"Unsupported mode: {mode}"
             }
 
         if not tool_name:
             return {
                 "executed": False,
+                "status": "error",
                 "error": "No tool specified"
             }
 
@@ -35,6 +37,7 @@ def execute_plan(intent: dict, user_input: str) -> dict:
         if not tool_fn:
             return {
                 "executed": False,
+                "status": "error",
                 "error": f"Tool '{tool_name}' not registered"
             }
 
@@ -48,25 +51,45 @@ def execute_plan(intent: dict, user_input: str) -> dict:
             if result.get("status") in ("executed", "success", "ok"):
                 return {
                     "executed": True,
+                    "status": "success",
                     "tool": tool_name,
                     "output": result
                 }
-            else:
+
+            if result.get("executed") is True:
+                return {
+                    "executed": True,
+                    "status": "success",
+                    "tool": tool_name,
+                    "output": result
+                }
+
+            if result.get("executed") is False:
                 return {
                     "executed": False,
+                    "status": "error",
                     "tool": tool_name,
-                    "error": result
+                    "error": result.get("error", result)
                 }
+
+            return {
+                "executed": True,
+                "status": "success",
+                "tool": tool_name,
+                "output": result
+            }
 
         if result is True:
             return {
                 "executed": True,
+                "status": "success",
                 "tool": tool_name
             }
 
         if result is False or result is None:
             return {
                 "executed": False,
+                "status": "error",
                 "tool": tool_name,
                 "error": "Tool returned no success flag"
             }
@@ -74,6 +97,7 @@ def execute_plan(intent: dict, user_input: str) -> dict:
         # Any other return type → treat as success but attach output
         return {
             "executed": True,
+            "status": "success",
             "tool": tool_name,
             "output": result
         }
@@ -83,5 +107,6 @@ def execute_plan(intent: dict, user_input: str) -> dict:
         print("[EXECUTOR ERROR]", e)
         return {
             "executed": False,
+            "status": "error",
             "error": str(e)
         }
